@@ -54,20 +54,17 @@ end
 
 describe "user input requirements" do
   it "check input for validity" do
-    expect(Tictactoe.new.check_input("1X")).to eql "100000000"
+    expect(Tictactoe.new.check_input(1)).to eql "100000000"
   end
 end
 
-require "stringio"
-
 describe "ask for user input" do
     it "record moves" do
-      input = StringIO.new("1\n")
-      output = StringIO.new
-      tictactoe = Tictactoe.new(input, output)
+      tictactoe = Tictactoe.new
 
-      tictactoe.ask_for_user_input
+      allow(tictactoe).to receive(:gets).and_return("1")
 
-      expect(output).to eql "please input your next move ( a number from 1 to 9 )\n1"
+      expect{ tictactoe.ask_for_user_input }.to output("please input your next move ( a number from 1 to 9 )\n1\n").to_stdout
+
     end
 end

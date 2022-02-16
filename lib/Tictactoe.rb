@@ -1,7 +1,6 @@
 class Tictactoe
-    def initialize(input: $stdin, output: $stdout)
-        @input = input
-        @output = output
+    def initialize
+        @current_player = 1
     end
 
     def confirm_horizontal_winner(moves)
@@ -45,9 +44,10 @@ class Tictactoe
         with_newlines = player1x[0, 3] + "\n" + player1x[3, 3] + "\n" + player1x[6, 3]
     end
 
-    def user_input(moves)
-        board = 000000000
-
+    def check_input(move)  # return true or false
+        @board = "000000000"
+        board_index = move - 1
+        return @board[board_index] != 0
     end
 
     def ask_for_user_input
@@ -55,6 +55,42 @@ class Tictactoe
         input = gets.chomp
         puts input
     end
+
+    def ask_for_user_name
+        puts "Enter username 1"
+        @name1 = gets.chomp
+        puts "Hello " + @name1 +"!"
+        puts "Enter username 2"
+        @name2 = gets.chomp
+        puts "Hello " + @name2 + "!"
+    end
+
+    # def record_moves
+    #     puts "Enter #{@name1}'s move"
+    #     @player1move = gets.chomp
+    #     puts "Hello " + @name1 +"!"
+    #     puts "Enter username 2"
+    #     @name2 = gets.chomp
+    #     puts "Hello " + @name2 + "!"
+    # end
+
+
+    def insert_move
+        while confirm_winner = false do
+        @player1_move_index = @player1_move.to_i-1
+            @current_player 
+        
+
+            # after change the board
+
+            if @current_player == 1
+                @current_player = 2
+            else
+                @current_player = 1
+            end
+        end
+    end
+
 end
 
-# Tictactoe.new.ask_for_user_input
+Tictactoe.new.ask_for_user_name
