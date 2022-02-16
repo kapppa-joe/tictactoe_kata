@@ -51,20 +51,80 @@ describe "display grid" do
   end
 end
 
-
-describe "user input requirements" do
-  it "check input for validity" do
-    expect(Tictactoe.new.check_input(1)).to eql "100000000"
+describe "check_input" do
+  it "return true if game_board is empty and player selects 1" do
+    game_board = "000000000"
+    expect(Tictactoe.new.check_input(game_board, 1)).to eql true
   end
+
+  it "return false if game_board is occupied at position 1 and player selects 1" do
+    game_board = "200000000"
+    expect(Tictactoe.new.check_input(game_board, 1)).to eql false
+  end
+
+  it "return false if invalid move made outside of 1-9 range" do
+    game_board = "110000000"
+    expect(Tictactoe.new.check_input(game_board, 11)).to eql false
+    expect(Tictactoe.new.check_input(game_board, 0)).to eql false
+    expect(Tictactoe.new.check_input(game_board, -5)).to eql false
+    expect(Tictactoe.new.check_input(game_board, "abc")).to eql false
+  end
+
 end
 
 describe "ask for user input" do
-    it "record moves" do
-      tictactoe = Tictactoe.new
+  it "record game_board" do
+    tictactoe = Tictactoe.new
 
-      allow(tictactoe).to receive(:gets).and_return("1")
+    allow(tictactoe).to receive(:gets).and_return("1")
 
-      expect{ tictactoe.ask_for_user_input }.to output("please input your next move ( a number from 1 to 9 )\n1\n").to_stdout
+    expect{ tictactoe.ask_for_user_input }.to output("please input your next move ( a number from 1 to 9 )\n").to_stdout
 
-    end
+  end
 end
+
+
+describe "insert move" do
+  it "insert 1 to the 5th position of the board if player1 select 5 as their move" do
+    tictactoe = Tictactoe.new
+    game_board_before = "000000000"    
+    game_board_after = tictactoe.insert_move(game_board_before, 5)
+    expect(game_board_after).to eql "000010000"
+
+    
+  end
+end
+
+describe "invalid input message" do
+  it "accept player input if gameboard is empty, and then give back the user input" do
+    game_board = "000000000"
+    player_input = 1
+    tictactoe = Tictactoe.new
+    allow(tictactoe).to receive(:gets).and_return("1")
+    expect(tictactoe.invalid_input_message(game_board)).to eql player_input
+  end
+
+  it "if player input is not valid, ask player to input again" do
+    game_board = "000000000"
+    player_input = 10
+    tictactoe = Tictactoe.new
+    allow(tictactoe).to receive(:gets).and_return("10")
+
+    expected_message = a_string_including("Sorry, your input was not valid. Can you input again?")
+
+    expect{ tictactoe.invalid_input_message(game_board) }.to output(expected_message).to_stdout
+  end
+
+  it "if player input is not valid, ask player to input again and again until got a valid input" do
+    game_board = "000000000"
+    
+    tictactoe = Tictactoe.new
+    allow(tictactoe).to receive(:gets).and_return("10", "0", "1")
+
+    expected_message = a_string_including("Sorry, your input was not valid. Can you input again?\n" * 2 )
+
+    expect(tictactoe).to receive(:gets).exactly(3).time
+    expect{ tictactoe.invalid_input_message(game_board) }.to output(expected_message).to_stdout
+  end
+end
+    
