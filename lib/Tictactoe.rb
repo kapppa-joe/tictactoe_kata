@@ -1,4 +1,11 @@
 class Tictactoe
+
+    def start_game
+        ask_for_user_name
+        # check_for_valid_move
+    end
+
+
     def initialize
         @current_player = 1
     end
@@ -99,24 +106,23 @@ class Tictactoe
         game_board
     end
 
-    def invalid_input_message(game_board) 
-        move = ask_for_user_input 
-        puts check_input(game_board,move.to_i), "test string"
-        count=0
-        while count!=4
-            count = count+1
-            check_input(game_board,move.to_i)
+    def check_for_valid_move(game_board) 
+        move = ask_for_user_input      
+        while not check_input(game_board,move.to_i) do
             puts "Sorry, your input was not valid. Can you input again?"
             move = ask_for_user_input 
         end
-        
-            return move.to_i
+        return move.to_i
         
     end
 
+  
+
+    
 
 
 
 end
 
-# Tictactoe.new.invalid_input_message("000000000")
+# Tictactoe.new.check_for_valid_move("000000000")
+Tictactoe.new.start_game

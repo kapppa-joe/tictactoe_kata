@@ -101,18 +101,18 @@ describe "invalid input message" do
     player_input = 1
     tictactoe = Tictactoe.new
     allow(tictactoe).to receive(:gets).and_return("1")
-    expect(tictactoe.invalid_input_message(game_board)).to eql player_input
+    expect(tictactoe.check_for_valid_move(game_board)).to eql player_input
   end
 
   it "if player input is not valid, ask player to input again" do
     game_board = "000000000"
     player_input = 10
     tictactoe = Tictactoe.new
-    allow(tictactoe).to receive(:gets).and_return("10")
+    allow(tictactoe).to receive(:gets).and_return("10", "1")
 
     expected_message = a_string_including("Sorry, your input was not valid. Can you input again?")
 
-    expect{ tictactoe.invalid_input_message(game_board) }.to output(expected_message).to_stdout
+    expect{ tictactoe.check_for_valid_move(game_board) }.to output(expected_message).to_stdout
   end
 
   it "if player input is not valid, ask player to input again and again until got a valid input" do
@@ -121,10 +121,20 @@ describe "invalid input message" do
     tictactoe = Tictactoe.new
     allow(tictactoe).to receive(:gets).and_return("10", "0", "1")
 
-    expected_message = a_string_including("Sorry, your input was not valid. Can you input again?\n" * 2 )
+    expected_message = a_string_including("Sorry, your input was not valid. Can you input again?\n")
 
     expect(tictactoe).to receive(:gets).exactly(3).time
-    expect{ tictactoe.invalid_input_message(game_board) }.to output(expected_message).to_stdout
+    expect{ tictactoe.check_for_valid_move(game_board) }.to output(expected_message).to_stdout
   end
+  
+  describe "start_game" do
+    
+    it "initiate game with user details" do
+      tictactoe = Tictactoe.new
+      expected_message = a_string_including("Enter username 1")
+      expect{tictactoe.start_game}.to output(expected_message).to_stdout
+    end
+  end
+
 end
     
