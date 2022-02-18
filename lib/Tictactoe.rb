@@ -97,8 +97,9 @@ class Tictactoe
   #     end
   # end
 
-  def insert_move(game_board, move)
+  def insert_move(game_board_before, move)
     # insert X into game_board using board index
+    game_board = game_board_before.clone
     game_board[move - 1] = @current_player.to_s
     game_board
   end
@@ -110,6 +111,11 @@ class Tictactoe
       move = ask_for_user_input
     end
     move.to_i
+  end
+
+  def change_player(game_board)
+    move = ask_for_user_input
+    
   end
 end
 

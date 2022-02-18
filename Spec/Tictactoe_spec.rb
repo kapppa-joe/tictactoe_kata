@@ -122,13 +122,33 @@ describe 'invalid input message' do
     expect(tictactoe).to receive(:gets).exactly(3).time
     expect { tictactoe.check_for_valid_move(game_board) }.to output(expected_message).to_stdout
   end
+end
+
 
   describe 'start_game' do
     it 'initiate game with user details' do
       tictactoe = Tictactoe.new
       expected_message = a_string_including('Enter username 1')
-      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe')
+      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', 'Ted', 'Joe')
+
       expect { tictactoe.start_game }.to output(expected_message).to_stdout
+
+      expected_greeting_ted = a_string_including('Hello Ted!')
+      expect { tictactoe.start_game }.to output(expected_greeting_ted).to_stdout
     end
   end
-end
+
+    describe 'show_game_progress' do
+      it 'display game board after each move has been made' do
+        game_board_move_0 = "000000000"
+        tictactoe = Tictactoe.new
+        game_board_move_1 = tictactoe.insert_move(game_board_move_0, 1)
+        game_board_move_2 = tictactoe.insert_move(game_board_move_1, 2)
+        expect(game_board_move_1).to eql '100000000'
+        expect(game_board_move_2).to eql '120000000'
+      end
+    end
+
+
+        
+    
