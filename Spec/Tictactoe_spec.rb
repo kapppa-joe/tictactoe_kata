@@ -1,38 +1,38 @@
 require 'tictactoe'
 
 describe 'tictactoe#confirm_winner' do
-  it 'return_false_at_start_of_game' do
-    expect(Tictactoe.new.confirm_winner('000000000')).to eql false
+  it 'return 0 at_start_of_game' do
+    expect(Tictactoe.new.confirm_winner('000000000')).to eql 0
   end
 
-  it 'return_false when no player has won yet' do
-    expect(Tictactoe.new.confirm_winner('101202101')).to eql false
-    expect(Tictactoe.new.confirm_winner('121212210')).to eql false
+  it 'return 0 when no player has won yet' do
+    expect(Tictactoe.new.confirm_winner('101202101')).to eql 0
+    expect(Tictactoe.new.confirm_winner('121212210')).to eql 0
   end
 
   it 'return true when a player wins by vertical / horizontal / diagonal' do
-    expect(Tictactoe.new.confirm_winner('111121221')).to eql true
-    expect(Tictactoe.new.confirm_winner('122102101')).to eql true
-    expect(Tictactoe.new.confirm_winner('100010001')).to eql true
+    expect(Tictactoe.new.confirm_winner('111121221')).to eql 1
+    expect(Tictactoe.new.confirm_winner('122102101')).to eql 1
+    expect(Tictactoe.new.confirm_winner('100010001')).to eql 1
   end
 
-  it 'return_true_when_a_player_occupied_a_horizontal_row' do
-    expect(Tictactoe.new.confirm_horizontal_winner('111121221')).to eql true
-    expect(Tictactoe.new.confirm_horizontal_winner('222121121')).to eql true
-    expect(Tictactoe.new.confirm_horizontal_winner('121111000')).to eql true
-    expect(Tictactoe.new.confirm_horizontal_winner('121222000')).to eql true
-    expect(Tictactoe.new.confirm_horizontal_winner('121121111')).to eql true
+  it 'return the player number when a player occupied a horizontal row' do
+    expect(Tictactoe.new.confirm_horizontal_winner('111121221')).to eql 1
+    expect(Tictactoe.new.confirm_horizontal_winner('222121121')).to eql 2
+    expect(Tictactoe.new.confirm_horizontal_winner('121111000')).to eql 1
+    expect(Tictactoe.new.confirm_horizontal_winner('121222000')).to eql 2
+    expect(Tictactoe.new.confirm_horizontal_winner('121121111')).to eql 1
   end
 
   it 'return true when a player occupied a vertical column' do
-    expect(Tictactoe.new.confirm_vertical_winner('122102101')).to eql true
-    expect(Tictactoe.new.confirm_vertical_winner('022122121')).to eql true
-    expect(Tictactoe.new.confirm_vertical_winner('001121121')).to eql true
+    expect(Tictactoe.new.confirm_vertical_winner('122102101')).to eql 1
+    expect(Tictactoe.new.confirm_vertical_winner('022122121')).to eql 2
+    expect(Tictactoe.new.confirm_vertical_winner('001121121')).to eql 1
   end
 
   it 'return true when a player occupied a diagonal column' do
-    expect(Tictactoe.new.confirm_diagonal_winner('100010001')).to eql true
-    expect(Tictactoe.new.confirm_diagonal_winner('102020201')).to eql true
+    expect(Tictactoe.new.confirm_diagonal_winner('100010001')).to eql 1
+    expect(Tictactoe.new.confirm_diagonal_winner('102020201')).to eql 2
   end
 end
 
@@ -230,8 +230,33 @@ describe 'choose_game_mode' do
     expected_message=a_string_including("You have selected a two player game")
     expect { tictactoe.choose_game_mode }.to output(expected_message).to_stdout
   end
-  
-
 end
         
-    
+describe "calculate_score" do
+  it 'return score as + 1 when the player has win the game' do
+    tictactoe = Tictactoe.new
+    game_board = "111200220"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as 0 when the game is draw' do
+    tictactoe = Tictactoe.new
+    game_board = "112221112"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
+
+  it 'return score as -1 when player has lose the game' do
+    tictactoe = Tictactoe.new
+    game_board = "111200220"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql -1
+  end
+end

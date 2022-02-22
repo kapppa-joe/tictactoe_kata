@@ -3,19 +3,16 @@ class Tictactoe
     ask_for_user_name
     game_board = "000000000"
     
-    while not(confirm_winner(game_board)) and not(confirm_draw(game_board)) do
+    while confirm_winner(game_board) == 0 and not(confirm_draw(game_board)) do
       puts display_grid(game_board)
       move = check_for_valid_move(game_board)
       game_board = insert_move(game_board,move)
     end
             
-    if confirm_winner(game_board)
-        if @current_player ==1
-        puts declare_winner(2)
-        elsif @current_player ==2
-        puts declare_winner(1) 
-        end
-    else
+    winner = confirm_winner(game_board)
+    if winner == 1 or winner == 2
+        puts declare_winner(winner)
+    else   # winner == 0 i.e. this is a draw
       puts declare_draw
     end
   end
@@ -29,45 +26,59 @@ class Tictactoe
   end
 
   def confirm_horizontal_winner(game_board)
-    if game_board[0, 3] == '111' or game_board[0, 3] == '222'
-      return true
-    elsif game_board[3, 3] == '111' or game_board[3, 3] == '222'
-      return true
-    elsif game_board[6, 3] == '111' or game_board[6, 3] == '222'
-      return true
+    if game_board[0, 3] == '111' or game_board[3, 3] == '111' or game_board[6, 3] == '111'
+      return 1
+    elsif game_board[0, 3] == '222' or game_board[3, 3] == '222' or game_board[6, 3] == '222'
+      return 2
+    else
+      return 0
     end
-
-    false
   end
 
   def confirm_vertical_winner(game_board)
-    if game_board[0] + game_board[3] + game_board[6] == '111' or game_board[0] + game_board[3] + game_board[6] == '222'
-      return true
-    elsif game_board[1] + game_board[4] + game_board[7] == '111' or game_board[1] + game_board[4] + game_board[7] == '222'
-      return true
-    elsif game_board[2] + game_board[5] + game_board[8] == '111' or game_board[2] + game_board[5] + game_board[8] == '222'
-      return true
+    if game_board[0] + game_board[3] + game_board[6] == '111' or game_board[1] + game_board[4] + game_board[7] == '111' or game_board[2] + game_board[5] + game_board[8] == '111'
+      return 1
+    elsif game_board[0] + game_board[3] + game_board[6] == '222' or game_board[1] + game_board[4] + game_board[7] == '222' or game_board[2] + game_board[5] + game_board[8] == '222'
+      return 2
+    else
+      return 0
     end
+    #   or game_board[0] + game_board[3] + game_board[6] == '222'
+    #   return true
+    # elsif game_board[1] + game_board[4] + game_board[7] == '111' or game_board[1] + game_board[4] + game_board[7] == '222'
+    #   return true
+    # elsif game_board[2] + game_board[5] + game_board[8] == '111' or game_board[2] + game_board[5] + game_board[8] == '222'
+    #   return true
+    # end
 
-    false
+    # false
   end
 
   def confirm_diagonal_winner(game_board)
-    if game_board[0] + game_board[4] + game_board[8] == '111' or game_board[0] + game_board[4] + game_board[8] == '222'
-      return true
-    elsif game_board[2] + game_board[4] + game_board[6] == '111' or game_board[2] + game_board[4] + game_board[6] == '222'
-      return true
+    if game_board[0] + game_board[4] + game_board[8] == '111' or game_board[2] + game_board[4] + game_board[6] == '111'  
+      return 1
+    elsif game_board[0] + game_board[4] + game_board[8] == '222' or game_board[2] + game_board[4] + game_board[6] == '222'
+      return 2
     end
 
-    false
+    0
   end
 
   def confirm_winner(game_board)
-    confirm_horizontal_winner(game_board) or confirm_diagonal_winner(game_board) or confirm_vertical_winner(game_board)
-  end
+    if confirm_horizontal_winner(game_board) != 0 
+        confirm_horizontal_winner(game_board)
+    elsif  confirm_diagonal_winner(game_board) !=0
+        confirm_diagonal_winner(game_board)
+        
+    elsif  confirm_vertical_winner(game_board) !=0
+        confirm_vertical_winner(game_board)    
+    else
+        0
+    end
+end
 
   def confirm_draw(game_board)
-    if not(game_board.include?("0")) and not confirm_winner(game_board)
+    if not(game_board.include?("0")) and confirm_winner(game_board) == 0
       return true
     else
       return false
@@ -161,7 +172,22 @@ class Tictactoe
         puts "You have selected a one player game"
     end
   end
+
+  def calculate_score(game_board, player_number)
+    if confirm_draw(game_board)
+      return 0
+      else
+        winner=confirm_winner(game_board)
+        if winner == player_number
+           return 1
+        elsif winner!=0
+            return -1
+        end
+    end
+   
+  end
+
 end
 
 # Tictactoe.new.check_for_valid_move("000000000")
-Tictactoe.new.choose_game_mode
+# Tictactoe.new.choose_game_mode
