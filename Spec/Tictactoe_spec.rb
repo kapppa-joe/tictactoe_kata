@@ -36,17 +36,23 @@ describe 'tictactoe#confirm_winner' do
   end
 end
 
+describe 'confirm_draw' do
+  it "confirm a draw when no other moves available and no winner' " do
+    expect(Tictactoe.new.confirm_draw("112221112")).to eql true
+  end
+end
+
 describe 'display grid' do
   it "display an empty grid when given a string '000000000' " do
-    expect(Tictactoe.new.display_grid('000000000')).to eql "   \n   \n   "
+    expect(Tictactoe.new.display_grid('000000000')).to eql ". . .\n. . .\n. . ."
   end
 
   it "display player one as X' " do
-    expect(Tictactoe.new.display_grid('100100100')).to eql "X  \nX  \nX  "
+    expect(Tictactoe.new.display_grid('100100100')).to eql "X . .\nX . .\nX . ."
   end
 
   it "display player two as O' " do
-    expect(Tictactoe.new.display_grid('200020002')).to eql "O  \n O \n  O"
+    expect(Tictactoe.new.display_grid('200020002')).to eql "O . .\n. O .\n. . O"
   end
 end
 
@@ -71,14 +77,25 @@ describe 'check_input' do
 end
 
 describe 'ask for user input' do
-  it 'record game_board' do
+  it 'ask player one to input his move' do
     tictactoe = Tictactoe.new
 
     allow(tictactoe).to receive(:gets).and_return('1')
 
     expect do
       tictactoe.ask_for_user_input
-    end.to output("please input your next move ( a number from 1 to 9 )\n").to_stdout
+    end.to output("#{tictactoe.name1} please input your next move ( a number from 1 to 9 )\n").to_stdout
+  end
+
+  it "if it is player two's turn, ask player two to input his move" do
+    tictactoe = Tictactoe.new
+    tictactoe.change_player  # switch player
+
+    allow(tictactoe).to receive(:gets).and_return('1')
+
+    expect do
+      tictactoe.ask_for_user_input
+    end.to output("#{tictactoe.name2} please input your next move ( a number from 1 to 9 )\n").to_stdout
   end
 end
 
@@ -126,16 +143,43 @@ end
 
 
   describe 'start_game' do
-    it 'initiate game with user details' do
+    # it 'initiate game with user details' do
+    #   tictactoe = Tictactoe.new
+    #   expected_message = a_string_including('Enter username 1')
+    #   allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', 'Ted', 'Joe')
+
+    #   expect { tictactoe.start_game }.to output(expected_message).to_stdout
+
+    #   expected_greeting_ted = a_string_including('Hello Ted!')
+    #   expect { tictactoe.start_game }.to output(expected_greeting_ted).to_stdout
+    # end
+
+    it "accept players' moves and declare when one player has won" do
       tictactoe = Tictactoe.new
-      expected_message = a_string_including('Enter username 1')
-      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', 'Ted', 'Joe')
-
+      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', '1', '4', '2', '5', '3')
+      expected_message = a_string_including( "Ted has won the game!")
       expect { tictactoe.start_game }.to output(expected_message).to_stdout
-
-      expected_greeting_ted = a_string_including('Hello Ted!')
-      expect { tictactoe.start_game }.to output(expected_greeting_ted).to_stdout
     end
+
+    it "accept players' moves and declare player two the winner" do
+      tictactoe = Tictactoe.new
+      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', '9', '1', '4', '2', '7', '3')
+      expected_message = a_string_including( "Joe has won the game!")
+      expect { tictactoe.start_game }.to output(expected_message).to_stdout
+    end
+
+
+
+
+
+
+    it "accept players' moves and declare when the game ends with a draw" do
+      tictactoe = Tictactoe.new
+      allow(tictactoe).to receive(:gets).and_return('Ted', 'Joe', '1', '2', '5', '3', '6', '4', '7', '9', '8')
+      expected_message = a_string_including( "The game is a draw!")
+      expect { tictactoe.start_game }.to output(expected_message).to_stdout
+    end
+
   end
 
     describe 'show_game_progress' do
@@ -146,9 +190,48 @@ end
         game_board_move_2 = tictactoe.insert_move(game_board_move_1, 2)
         expect(game_board_move_1).to eql '100000000'
         expect(game_board_move_2).to eql '120000000'
+        game_board_move_3 = tictactoe.insert_move(game_board_move_2, 3)
+        game_board_move_4 = tictactoe.insert_move(game_board_move_3, 4)
+        expect(game_board_move_3).to eql '121000000'
+        expect(game_board_move_4).to eql '121200000'
       end
     end
 
+describe 'declare_winner' do
+  it 'take a number 1 or 2 and declare the winner' do
+    tictactoe = Tictactoe.new
+    expect(tictactoe.declare_winner(1)).to eql "#{tictactoe.name1} has won the game!"
+    expect(tictactoe.declare_winner(2)).to eql "#{tictactoe.name2} has won the game!"
+  end
+end
 
+describe 'declare_draw' do
+  it 'where there is no winner and no further moves available declare a draw' do
+    tictactoe = Tictactoe.new
+    expect(tictactoe.declare_draw).to eql "The game is a draw!"
+  end
+end
+
+describe 'choose_game_mode' do
+  it 'give player the option of playing against AI or another player' do
+    tictactoe = Tictactoe.new
+    allow(tictactoe).to receive(:gets).and_return('2','Ted', 'Joe', '1', '4', '2', '5', '3')
+    expected_message = a_string_including("Select one player or two players?\nEnter 1 for one player\nEnter 2 for two players")
+
+    expect { tictactoe.choose_game_mode }.to output(expected_message).to_stdout
+  end
+
+
+  it 'enters two player mode if player input 2' do
+    tictactoe = Tictactoe.new
+
+    allow(tictactoe).to receive(:gets).and_return('2','Ted', 'Joe', '1', '4', '2', '5', '3')
+    
+    expected_message=a_string_including("You have selected a two player game")
+    expect { tictactoe.choose_game_mode }.to output(expected_message).to_stdout
+  end
+  
+
+end
         
     
