@@ -259,4 +259,68 @@ describe "calculate_score" do
 
     expect(score).to eql -1
   end
+
+  it 'return score as 0 when the next move will result in a draw' do
+    tictactoe = Tictactoe.new
+    game_board = "112221102"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
+
+  it 'return score as zero when two moves are available and a draw is inevitable' do
+    tictactoe = Tictactoe.new
+    game_board = "012211120"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
+
+  it 'return score as +1 when the next move will result in a win' do
+    tictactoe = Tictactoe.new
+    game_board = "212221110"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as +1 when two moves are available and the player will wins by player either moves' do
+    tictactoe = Tictactoe.new
+    game_board = "212001211"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as -1 when two moves are available and the player will inevitably lose' do
+    tictactoe = Tictactoe.new
+    game_board = "112002121"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql -1
+  end
+
+  it 'computer to select best outcome with two moves available (win or draw)' do
+    tictactoe = Tictactoe.new
+    game_board = "211010221"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'computer to select best outcome with two moves available (draw or lose)' do
+    tictactoe = Tictactoe.new
+    game_board = "102011122"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
 end
+

@@ -126,6 +126,14 @@ end
     game_board
   end
 
+  def insert_move_without_changing_player(game_board_before, move, player)
+    # insert X into game_board using board index
+    game_board = game_board_before.clone
+    game_board[move] = player.to_s
+    game_board
+  end
+
+
   def check_for_valid_move(game_board)
     move = ask_for_user_input
     until check_input(game_board, move.to_i)
@@ -174,19 +182,65 @@ end
   end
 
   def calculate_score(game_board, player_number)
+    
     if confirm_draw(game_board)
       return 0
-      else
-        winner=confirm_winner(game_board)
-        if winner == player_number
-           return 1
-        elsif winner!=0
-            return -1
-        end
+    else
+      winner=confirm_winner(game_board)
+      if winner == player_number
+        return 1
+      elsif winner!=0
+        return -1
+      end
     end
+
+    # when the game is not ended yet
+   update_game_board_for_final_move(game_board, player_number)
    
   end
 
+  def update_game_board_for_final_move(game_board, player_number)
+    # game_board = "112221102"
+    if game_board.count('0') == 1
+      draw_board = game_board.gsub('0','1')
+      calculate_score(draw_board, player_number) 
+      
+
+    elsif game_board.count('0') == 2
+      available_cells = (0..8).select {|index| game_board[index] == '0' }
+      move1, move2 = available_cells
+
+      future_board_1 = insert_move_without_changing_player(game_board, move1, player_number)
+      future_board_2 = insert_move_without_changing_player(game_board, move2, player_number)
+
+      if player_number == 1 
+        player_number_of_opponent = 2
+      else
+        player_number_of_opponent = 1
+      end
+
+      score_of_future_board_1_for_opponent = calculate_score(future_board_1, player_number_of_opponent)
+      score_of_future_board_2_for_opponent = calculate_score(future_board_2, player_number_of_opponent)
+
+      puts "#{score_of_future_board_1_for_opponent}, #{score_of_future_board_2_for_opponent} <---"
+
+      # the cases of draw game
+      if score_of_future_board_1_for_opponent == 0 and score_of_future_board_2_for_opponent == 0
+        return 0
+      elsif score_of_future_board_1_for_opponent == 1 and score_of_future_board_2_for_opponent == 0
+        return 0
+      # the cases of win game
+      elsif score_of_future_board_1_for_opponent == -1 and score_of_future_board_2_for_opponent == -1
+        return 1
+      elsif score_of_future_board_1_for_opponent == -1 and score_of_future_board_2_for_opponent == 0
+        return 1
+      # the cases of lose game
+      elsif score_of_future_board_1_for_opponent == 1 and score_of_future_board_2_for_opponent == 1
+        return -1
+      
+      end
+    end
+  end
 end
 
 # Tictactoe.new.check_for_valid_move("000000000")
