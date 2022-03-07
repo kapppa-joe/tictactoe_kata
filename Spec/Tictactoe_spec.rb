@@ -322,5 +322,96 @@ describe "calculate_score" do
 
     expect(score).to eql 0
   end
+
+  it 'computer to select best outcome with two moves available (win or lose)' do
+    tictactoe = Tictactoe.new
+    game_board = "201201112"
+    player_number = 2
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as +1 when 3 moves available, all of them leads to winning the game' do
+    tictactoe = Tictactoe.new
+    game_board = "110212200"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as +1 when 3 moves available with one winning move, select winning move' do
+    tictactoe = Tictactoe.new
+    game_board = "102220101"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as 0 for test case with two empty cells, one is draw and one is lose' do
+    tictactoe = Tictactoe.new
+    game_board = "212120120"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
+
+  it 'return score as +1 when 5 moves available, win the game' do
+    tictactoe = Tictactoe.new
+    game_board = "100000221"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 1
+  end
+
+  it 'return score as 0 when the board is empty' do
+    tictactoe = Tictactoe.new
+    game_board = "000000000"
+    player_number = 1
+    score = tictactoe.calculate_score(game_board, player_number)
+
+    expect(score).to eql 0
+  end
 end
 
+describe "computers_move" do
+  it 'when the board only have one empty cell, it should return the index of that cell' do
+    tictactoe = Tictactoe.new
+    game_board = "121212210"
+    player = 1
+    
+    expect(tictactoe.computers_move(game_board, player)).to eq 9
+  end
+
+  describe "computers_penultimate_move" do
+    it 'when the board has three empty cells, it should return the index of the cell that leads to an optimal outcome' do
+      tictactoe = Tictactoe.new
+      game_board = "102220101"
+      player = 1
+      
+      expect(tictactoe.computers_move(game_board, player)).to eq 8
+    end
+
+    it 'when the board has five empty cells, and one move eventually leads to win, it will choose that move' do
+      tictactoe = Tictactoe.new
+      game_board = "121200000"
+      player = 1
+      
+      expect(tictactoe.computers_move(game_board, player)).to eq 5
+    end
+
+    it 'when the board has four empty cells, and one of the available moves wins the game, it will choose that move' do
+      tictactoe = Tictactoe.new
+      game_board = "120021001"
+      player = 2
+      
+      expect(tictactoe.computers_move(game_board, player)).to eq 8
+    end
+  end
+
+  
+end

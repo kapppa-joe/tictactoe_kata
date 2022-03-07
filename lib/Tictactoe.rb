@@ -17,6 +17,34 @@ class Tictactoe
     end
   end
 
+  def start_human_vs_computer_game
+    # ask_for_user_name
+    game_board = "000000000"
+    
+    while confirm_winner(game_board) == 0 and not(confirm_draw(game_board)) do
+      puts display_grid(game_board)
+
+      if @current_player == 1
+        puts "PLAYER's TURN"
+        move = check_for_valid_move(game_board)  # player's turn
+      else
+        # computer's turn
+        puts "COMPUTER's TURN"
+        move = computers_move(game_board, 2)
+      end
+      game_board = insert_move(game_board, move)
+    end
+            
+    winner = confirm_winner(game_board)
+    if winner == 1 or winner == 2
+        puts declare_winner(winner)
+        puts display_grid(game_board)
+    else   # winner == 0 i.e. this is a draw
+      puts declare_draw
+      puts display_grid(game_board)
+    end
+  end
+
   attr_reader :name1, :name2
 
   def initialize
@@ -222,26 +250,95 @@ end
       score_of_future_board_1_for_opponent = calculate_score(future_board_1, player_number_of_opponent)
       score_of_future_board_2_for_opponent = calculate_score(future_board_2, player_number_of_opponent)
 
-      puts "#{score_of_future_board_1_for_opponent}, #{score_of_future_board_2_for_opponent} <---"
+      combined_score = [score_of_future_board_1_for_opponent, score_of_future_board_2_for_opponent].min
+      combined_score = combined_score * -1 # because the score got here was opponent's viewpoint, so multiply by -1
 
-      # the cases of draw game
-      if score_of_future_board_1_for_opponent == 0 and score_of_future_board_2_for_opponent == 0
-        return 0
-      elsif score_of_future_board_1_for_opponent == 1 and score_of_future_board_2_for_opponent == 0
-        return 0
-      # the cases of win game
-      elsif score_of_future_board_1_for_opponent == -1 and score_of_future_board_2_for_opponent == -1
-        return 1
-      elsif score_of_future_board_1_for_opponent == -1 and score_of_future_board_2_for_opponent == 0
-        return 1
-      # the cases of lose game
-      elsif score_of_future_board_1_for_opponent == 1 and score_of_future_board_2_for_opponent == 1
-        return -1
-      
+      return combined_score
+
+    elsif game_board.count('0') == 3
+      available_cells = (0..8).select {|index| game_board[index] == '0' }
+      move1, move2, move3 = available_cells
+
+      future_board_1 = insert_move_without_changing_player(game_board, move1, player_number)
+      future_board_2 = insert_move_without_changing_player(game_board, move2, player_number)
+      future_board_3 = insert_move_without_changing_player(game_board, move3, player_number)
+
+      if player_number == 1 
+        player_number_of_opponent = 2
+      else
+        player_number_of_opponent = 1
       end
+
+      score_of_future_board_1_for_opponent = calculate_score(future_board_1, player_number_of_opponent)
+      score_of_future_board_2_for_opponent = calculate_score(future_board_2, player_number_of_opponent)
+      score_of_future_board_3_for_opponent = calculate_score(future_board_3, player_number_of_opponent)
+
+
+      combined_score = [score_of_future_board_1_for_opponent, score_of_future_board_2_for_opponent, score_of_future_board_3_for_opponent].min
+      combined_score = combined_score * -1 # because the score got here was opponent's viewpoint, so multiply by -1
+
+    else
+      available_cells = (0..8).select {|index| game_board[index] == '0' }
+      # move1, move2, move3 = available_cells
+
+      future_boards = []
+      available_cells.each do |move|
+        future_boards.push(insert_move_without_changing_player(game_board, move, player_number))
+      end
+
+      # future_board_1 = insert_move_without_changing_player(game_board, move1, player_number)
+      # future_board_2 = insert_move_without_changing_player(game_board, move2, player_number)
+      # future_board_3 = insert_move_without_changing_player(game_board, move3, player_number)
+
+      if player_number == 1 
+        player_number_of_opponent = 2
+      else
+        player_number_of_opponent = 1
+      end
+
+      scores_of_future_boards = []
+      future_boards.each do |future_board|
+        scores_of_future_boards.push(calculate_score(future_board, player_number_of_opponent))
+      end
+
+      # score_of_future_board_1_for_opponent = calculate_score(future_board_1, player_number_of_opponent)
+      # score_of_future_board_2_for_opponent = calculate_score(future_board_2, player_number_of_opponent)
+      # score_of_future_board_3_for_opponent = calculate_score(future_board_3, player_number_of_opponent)
+
+
+      combined_score = scores_of_future_boards.min
+      combined_score = combined_score * -1 # because the score got here was opponent's viewpoint, so multiply by -1
+
+      return combined_score
     end
   end
+  
+  def computers_move(game_board, player_number)
+    available_cells = (0..8).select {|index| game_board[index] == '0' }
+    possible_scores = {}
+
+    if player_number == 1 
+      player_number_of_opponent = 2
+    else
+      player_number_of_opponent = 1
+    end
+        
+    available_cells.each do |cell_index|
+      future_board = insert_move_without_changing_player(game_board, cell_index, player_number)
+      possible_scores[cell_index] = calculate_score(future_board, player_number_of_opponent)
+
+      if confirm_winner(future_board) == player_number
+        return cell_index + 1   # add 1 here because player move use range 1-9
+      end
+    end
+
+    # use .min here for best score because it is about minimizing opponent's score
+    best_score = possible_scores.values.min
+    
+    possible_scores.key(best_score) + 1 # add 1 here because player move use range 1-9
+  end
+
 end
 
 # Tictactoe.new.check_for_valid_move("000000000")
-# Tictactoe.new.choose_game_mode
+Tictactoe.new.start_human_vs_computer_game
