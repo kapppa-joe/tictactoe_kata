@@ -114,6 +114,7 @@ describe 'invalid input message' do
     player_input = 1
     tictactoe = Tictactoe.new
     allow(tictactoe).to receive(:gets).and_return('1')
+    allow(tictactoe).to receive(:puts).and_return('')
     expect(tictactoe.check_for_valid_move(game_board)).to eql player_input
   end
 
